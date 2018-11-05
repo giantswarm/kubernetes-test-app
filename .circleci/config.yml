@@ -70,8 +70,9 @@ workflows:
       #     requires:
       #     - build
       #
-      - github-release
-          # requires:
+      - github-release:
+          requires:
+              - build
           #   - e2eTestBasic
           # filters:
           #   branches:
