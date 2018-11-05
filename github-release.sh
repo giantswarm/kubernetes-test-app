@@ -5,6 +5,8 @@ PERSONAL_ACCESS_TOKEN=$3
 SHORT_SHA=$(echo ${SHA} | head -c 7)
 DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+echo "${1}, ${2}, ${3}"
+
 echo "Creating Tag"
 tag_output=$(curl \
     --request POST \
