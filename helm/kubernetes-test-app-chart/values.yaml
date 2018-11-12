@@ -4,7 +4,7 @@
 
 name: test-app
 namespace: kube-system
-port: 10302
+port: 10301
 portName: metrics
 
 replicas: 1
