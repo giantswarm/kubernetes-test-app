@@ -3,20 +3,20 @@ entries:
   kubernetes-test-app-chart:
   - apiVersion: v1
     appVersion: v1.3.1
-    created: 2018-11-12T20:10:30.359009906Z
+    created: 2018-11-12T20:12:00.552162165Z
     description: A Helm chart for a test app
-    digest: f1d8c273c039a2fe44f416a9bc9c56b69664513f61d8c70da4c5d7567a7d723a
+    digest: 2bbcb3eea7b59d4da109b823e287f537ad198747e50b3498cc0628a8f8482aa4
     name: kubernetes-test-app-chart
     urls:
     - kubernetes-test-app-chart-0.1.9.tgz
     version: 0.1.9
   - apiVersion: v1
     appVersion: v1.3.1
-    created: 2018-11-12T20:10:30.358520884Z
+    created: 2018-11-12T20:12:00.55190593Z
     description: A Helm chart for a test app
     digest: af2e24fdbb6d06aa6bfcf3a17582f99d59f0d332ffdbf330501964c17d6c82f9
     name: kubernetes-test-app-chart
     urls:
     - kubernetes-test-app-chart-0.1.8.tgz
     version: 0.1.8
-generated: 2018-11-12T20:10:30.357390515Z
+generated: 2018-11-12T20:12:00.551468509Z
