@@ -1,6 +1,6 @@
 e2eTest: &e2eTest
     machine: true
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-managed-test-app
+    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     steps:
     - checkout
 
@@ -50,7 +50,7 @@ jobs:
     <<: *e2eTest
 
   github-release:
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-managed-test-app
+    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
     steps:
       - checkout
@@ -59,6 +59,22 @@ jobs:
           at: .
 
       - run: ./github-release.sh $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1 $PERSONAL_ACCESS_TOKEN
+
+  app-release:
+    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
+    machine: true
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run: |
+        curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+        helm package helm/kubernetes-test-app-chart
+        tar=$(helm package helm/kubernetes-test-app-chart | awk '{print $NF}')
+        helm plugin install https://github.com/technosophos/helm-github
+        helm github push $tar
 
 workflows:
   version: 2
@@ -70,10 +86,9 @@ workflows:
       #     requires:
       #     - build
       #
-      - github-release:
+      - app-release:
           requires:
               - build
-          #   - e2eTestBasic
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
