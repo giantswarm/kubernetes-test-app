@@ -7,10 +7,11 @@ PERSONAL_ACCESS_TOKEN=$2
 
 push() {
   echo "Pushing ${1} to ${2}"
-  helm repo index ./ --merge https://giantswarm.github.com/${REPONAME} --url https://giantswarm.github.com/${REPONAME}
+  # NOTE: Creation time of all charts updated, since local existing charts take priority
+  # Fix this, by deleting (old) checked out charts first
+  helm repo index ./ --merge ./index.yaml --url https://giantswarm.github.com/${REPONAME}
   git add ./$1 ./index.yaml
   git commit -m "Auto-commit ${1}"
-  # git push origin master
   git push -q https://${PERSONAL_ACCESS_TOKEN}@github.com/giantswarm/${REPONAME}.git ${2}
   echo "Successfully pushed ${1} to GitHub Pages"
 }
