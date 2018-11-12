@@ -25,5 +25,5 @@ git config user.email "dev@giantswarm.io"
 git config user.name "Taylor Bot"
 
 # Push to github
-git co gh-pages
+git checkout -f gh-pages
 push ${CHART} gh-pages
