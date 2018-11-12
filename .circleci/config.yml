@@ -49,17 +49,6 @@ jobs:
       TEST_NAME: "basic"
     <<: *e2eTest
 
-  github-release:
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
-    machine: true
-    steps:
-      - checkout
-
-      - attach_workspace:
-          at: .
-
-      - run: ./github-release.sh $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1 $PERSONAL_ACCESS_TOKEN
-
   app-release:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
@@ -84,6 +73,6 @@ workflows:
       - app-release:
           requires:
               - build
-          # filters:
-          #   branches:
-          #     only: master
+          filters:
+            branches:
+              only: master
