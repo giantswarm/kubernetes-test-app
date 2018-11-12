@@ -69,7 +69,7 @@ jobs:
       - attach_workspace:
           at: .
 
-      - run: |
+      - run: ./app-release.sh
         curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
         helm package helm/kubernetes-test-app-chart
         tar=$(helm package helm/kubernetes-test-app-chart | awk '{print $NF}')
