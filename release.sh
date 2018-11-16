@@ -25,6 +25,7 @@ EOF
 }
 
 release() {
+  echo "Releasing ${PROJECT}..."
   echo "Creating Tag v${VERSION}"
   tag_output=$(curl \
       --request POST \
@@ -44,8 +45,10 @@ release() {
       https://api.github.com/repos/giantswarm/${PROJECT}/git/tags
   )
   echo ${tag_output} | jq
+  echo "Done. The managed app will now be pushed to a helm repo."
+  echo ""
 
-  echo "Creating Github release ${PROJECT} v${VERSION}"
+  echo "Creating Github release v${VERSION}"
   release_output=$(curl -s \
       -X POST \
       -H "Authorization: token ${GITHUB_TOKEN}" \
@@ -59,14 +62,18 @@ release() {
       }" \
       https://api.github.com/repos/giantswarm/${PROJECT}/releases
   )
-
-  echo "Done. The managed app will now be pushed to a helm repo."
-  echo "The Github release is now prepared, but not yet published.\n"
+  echo "The Github release is now prepared, but not yet published."
   echo "You can edit your release description here:"
   echo "https://github.com/giantswarm/${PROJECT}/releases/"
 }
 
-if ! [ -z "$GITHUB_TOKEN" ]; then
+wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
+OUT=$?
+
+if [ $OUT -eq 0 ];then
+  echo "Release already exists. Did you increment the version in the VERSION file?"
+  exit 1
+elif ! [ -z "$GITHUB_TOKEN" ]; then
   release
 elif [ -e "${HOME}/.github-token" ]; then
   GITHUB_TOKEN=$(cat ${HOME}/.github-token)
