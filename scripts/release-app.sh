@@ -38,7 +38,7 @@ release_output=$(curl -s \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     -H "Content-Type: application/json" \
     -d "{
-        \"tag_name\": \"${VERSION}\",
+        \"tag_name\": \"v${VERSION}\",
         \"name\": \"v${VERSION}\",
         \"body\": \"### New features\\n\\n### Minor changes\\n\\n### Bugfixes\\n\\n\",
         \"draft\": true,
