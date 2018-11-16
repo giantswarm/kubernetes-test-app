@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Script to publish a release
+# Script to release a managed app
 
 PROJECT=kubernetes-test-app
 

@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: v1.3.1
 description: A Helm chart for a test app
 name: kubernetes-test-app-chart
-version: 0.2.3
+version: [[ .SHA ]]
