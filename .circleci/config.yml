@@ -62,17 +62,22 @@ jobs:
 
 workflows:
   version: 2
-  build_e2e:
+  build_e2e_deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
 
       # - e2eTestBasic:
       #     requires:
       #     - build
-      #
+
       - app-release:
           requires:
               - build
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/
