@@ -60,7 +60,8 @@ jobs:
 
       - run:
           name: Replace SHA with specified Version
-          command: sed -i 's/version:.*/version: '$(cat ./VERSION)'/' helm/${CIRCLE_PROJECT_REPONAME}-chart/Chart.yaml
+          command: |
+            sed -i 's/version:.*/version: '$(cat ./VERSION)'/' helm/${CIRCLE_PROJECT_REPONAME}-chart/Chart.yaml
       - run:
           name: Release chart to helm repository
           command: ./scripts/release-chart-repo.sh ${CIRCLE_PROJECT_REPONAME} ${PERSONAL_ACCESS_TOKEN}
