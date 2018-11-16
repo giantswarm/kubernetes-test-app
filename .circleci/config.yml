@@ -49,7 +49,7 @@ jobs:
       TEST_NAME: "basic"
     <<: *e2eTest
 
-  app-release:
+  release-chart:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
     steps:
@@ -58,7 +58,13 @@ jobs:
       - attach_workspace:
           at: .
 
-      - run: ./app-release.sh $CIRCLE_PROJECT_REPONAME $PERSONAL_ACCESS_TOKEN
+      - run:
+          name: Replace SHA with specified Version
+          command: |
+            sed -i 's/version:.*/version: '$(cat ./VERSION)'/' helm/${CIRCLE_PROJECT_REPONAME}-chart/Chart.yaml
+      - run:
+          name: Release chart to helm repository
+          command: ./ci-scripts/push-to-registry.sh ${CIRCLE_PROJECT_REPONAME} ${PERSONAL_ACCESS_TOKEN}
 
 workflows:
   version: 2
@@ -73,7 +79,7 @@ workflows:
       #     requires:
       #     - build
 
-      - app-release:
+      - release-chart:
           requires:
               - build
           filters:
