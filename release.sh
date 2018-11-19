@@ -57,29 +57,48 @@ release() {
           \"tag_name\": \"v${VERSION}\",
           \"name\": \"v${VERSION}\",
           \"body\": \"### New features\\n\\n### Minor changes\\n\\n### Bugfixes\\n\\n\",
-          \"draft\": true,
+          \"draft\": false,
           \"prerelease\": false
       }" \
       https://api.github.com/repos/giantswarm/${PROJECT}/releases
   )
-  echo "The Github release is now prepared, but not yet published."
-  echo "Please edit your release description and publish the release here:"
-  echo "https://github.com/giantswarm/${PROJECT}/releases/"
+  echo "The Github release is now published."
+  echo "Please add release notes here:"
+  echo "https://github.com/giantswarm/${PROJECT}/releases/edit/v${VERSION}"
+
+  # fetch the release id for the upload
+  RELEASE_ID=$(echo $release_output | jq '.id')
+
+  # Replace CI version with release VERSION
+  sed -i 's/version:.*/version: '${VERSION}'/' helm/${PROJECT}-chart/Chart.yaml
+
+  # Install helm and package chart TODO: Not use latest helm
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+  CHART=$(helm package --save=false helm/${PROJECT}-chart | tr "/" " " | awk '{print $NF}')
+  echo "Upload chart ${CHART} to GitHub Release"
+  upload_output=$(curl -s \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        -H "Content-Type: application/octet-stream" \
+        --data-binary @${CHART} \
+          https://uploads.github.com/repos/giantswarm/${PROJECT}/releases/${RELEASE_ID}/assets?name=${CHART}
+  )
+
+  # Cleanup
+  git checkout helm/${PROJECT}-chart/Chart.yaml
+  rm -f ${CHART}
 }
 
 wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
-OUT=$?
-
-if [ $OUT -eq 0 ];then
+if [ $? -eq 0 ];then
   echo "Release already exists. Did you increment the version in the VERSION file?"
   exit 1
-elif ! [ -z "$GITHUB_TOKEN" ]; then
+elif ! [ -z "${GITHUB_TOKEN}" ]; then
   release
 elif [ -e "${HOME}/.github-token" ]; then
   GITHUB_TOKEN=$(cat ${HOME}/.github-token)
   release
 else
-  echo "Error: No GitHub Token found!"
+  echo "Error: No GitHub token found!"
   usage
   exit 1
 fi
