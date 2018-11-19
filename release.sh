@@ -76,17 +76,12 @@ release() {
   curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
   CHART=$(helm package --save=false helm/${PROJECT}-chart | tr "/" " " | awk '{print $NF}')
   echo "Upload chart ${CHART} to GitHub Release"
-
-  if [ -e "${CHART}" ]; then
-      curl \
+  upload_output=$(curl -s \
         -H "Authorization: token ${GITHUB_TOKEN}" \
         -H "Content-Type: application/octet-stream" \
         --data-binary @${CHART} \
           https://uploads.github.com/repos/giantswarm/${PROJECT}/releases/${RELEASE_ID}/assets?name=${CHART}
-  else
-    echo "Error: No chart archive found!"
-    exit 1
-  fi
+  )
 
   # Cleanup
   git checkout helm/${PROJECT}-chart/Chart.yaml
