@@ -68,18 +68,16 @@ release() {
 }
 
 wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
-OUT=$?
-
-if [ $OUT -eq 0 ];then
+if [ $? -eq 0 ];then
   echo "Release already exists. Did you increment the version in the VERSION file?"
   exit 1
-elif ! [ -z "$GITHUB_TOKEN" ]; then
+elif ! [ -z "${GITHUB_TOKEN}" ]; then
   release
 elif [ -e "${HOME}/.github-token" ]; then
   GITHUB_TOKEN=$(cat ${HOME}/.github-token)
   release
 else
-  echo "Error: No GitHub Token found!"
+  echo "Error: No GitHub token found!"
   usage
   exit 1
 fi
