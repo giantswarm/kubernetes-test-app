@@ -87,6 +87,10 @@ release() {
     echo "Error: No chart archive found!"
     exit 1
   fi
+
+  # Cleanup
+  git checkout ./VERSION
+  rm -f helm/${PROJECT}-chart/Chart.yaml
 }
 
 wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
