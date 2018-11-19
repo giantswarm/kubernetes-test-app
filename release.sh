@@ -89,8 +89,8 @@ release() {
   fi
 
   # Cleanup
-  git checkout ./VERSION
-  rm -f helm/${PROJECT}-chart/Chart.yaml
+  git checkout helm/${PROJECT}-chart/Chart.yaml
+  rm -f ${CHART}
 }
 
 wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
