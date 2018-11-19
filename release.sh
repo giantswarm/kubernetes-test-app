@@ -57,14 +57,14 @@ release() {
           \"tag_name\": \"v${VERSION}\",
           \"name\": \"v${VERSION}\",
           \"body\": \"### New features\\n\\n### Minor changes\\n\\n### Bugfixes\\n\\n\",
-          \"draft\": true,
+          \"draft\": false,
           \"prerelease\": false
       }" \
       https://api.github.com/repos/giantswarm/${PROJECT}/releases
   )
-  echo "The Github release is now prepared, but not yet published."
-  echo "Please edit your release description and publish the release here:"
-  echo "https://github.com/giantswarm/${PROJECT}/releases/"
+  echo "The Github release is now published."
+  echo "Please add release notes here:"
+  echo "https://github.com/giantswarm/${PROJECT}/releases/edit/v${VERSION}"
 
   # fetch the release id for the upload
   RELEASE_ID=$(echo $release_output | jq '.id')
