@@ -63,7 +63,7 @@ release() {
       https://api.github.com/repos/giantswarm/${PROJECT}/releases
   )
   echo "The Github release is now prepared, but not yet published."
-  echo "You can edit your release description here:"
+  echo "Please edit your release description and publish the release here:"
   echo "https://github.com/giantswarm/${PROJECT}/releases/"
 }
 
