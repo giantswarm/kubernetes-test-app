@@ -65,6 +65,28 @@ release() {
   echo "The Github release is now prepared, but not yet published."
   echo "Please edit your release description and publish the release here:"
   echo "https://github.com/giantswarm/${PROJECT}/releases/"
+
+  # fetch the release id for the upload
+  RELEASE_ID=$(echo $release_output | jq '.id')
+
+  # Replace CI version with release VERSION
+  sed -i 's/version:.*/version: '${VERSION}'/' helm/${PROJECT}-chart/Chart.yaml
+
+  # Install helm and package chart TODO: Not use latest helm
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+  CHART=$(helm package --save=false helm/${PROJECT}-chart | tr "/" " " | awk '{print $NF}')
+  echo "Upload chart ${CHART} to GitHub Release"
+
+  if [ -e "${CHART}" ]; then
+      curl \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        -H "Content-Type: application/octet-stream" \
+        --data-binary @${CHART} \
+          https://uploads.github.com/repos/giantswarm/${PROJECT}/releases/${RELEASE_ID}/assets?name=${CHART}
+  else
+    echo "Error: No chart archive found!"
+    exit 1
+  fi
 }
 
 wget --no-check-certificate https://github.com/giantswarm/${PROJECT}/tarball/v${VERSION} > /dev/null 2>&1
