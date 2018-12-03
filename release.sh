@@ -13,20 +13,19 @@ readonly HELM_TARBALL=helm-v2.11.0-linux-amd64.tar.gz
 
 main() {
   if ! setup_helm_client; then
-    log_error "Helm client could not get installed"
+    log_error "Helm client could not get installed."
     exit 1
   fi
 
   if ! id=$(release_github "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}"); then
-    log_error "GitHub Release could not get created"
+    log_error "GitHub Release could not get created."
     exit 1
   fi
 
   if ! upload_assets "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}" "${id}"; then
-    log_error "Assets could not be uploaded to GitHub"
+    log_error "Assets could not be uploaded to GitHub."
     exit 1
   fi
-
 }
 
 setup_helm_client() {
@@ -45,14 +44,14 @@ release_github() {
   local version="${2?Specify version}"
   local token="${3?Specify Github Token}"
 
-  wget --no-check-certificate "https://github.com/giantswarm/${project}/tarball/${version}" > /dev/null 2>&1
-  release_exists=$?
-  if [ "${release_exists}" -eq 0 ]; then
-    log_error "Release already exists."
-    return 1
-  fi
+  # TODO: This checks for existing tag, not release
+  # http_code=$(curl -s -o /dev/null -w "%{http_code}" "https://github.com/giantswarm/${project}/releases/tag/${version}")
+  # if [ "${http_code}" -eq 200 ]; then
+  #   log_error "Release already exists."
+  #   return 1
+  # fi
 
-  echo "Creating Github release ${version}"
+  # echo "Creating Github release ${version}"
   release_output=$(curl -s \
       -X POST \
       -H "Authorization: token ${token}" \
@@ -66,11 +65,7 @@ release_github() {
       }" \
       "https://api.github.com/repos/giantswarm/${project}/releases"
   )
-  echo "The Github release is now published."
-  echo "Please add release notes here:"
-  echo "https://github.com/giantswarm/${project}/releases/edit/${version}"
 
-  echo "${release_output}"
   # Return release id for the asset upload
   release_id=$(echo "${release_output}" | jq '.id')
   echo "${release_id}"
@@ -91,9 +86,10 @@ upload_assets(){
   upload_output=$(curl -s \
         -H "Authorization: token ${token}" \
         -H "Content-Type: application/octet-stream" \
-        --data-binary @"${chart}" \
+        --data-binary "@${chart}" \
           "https://uploads.github.com/repos/giantswarm/${project}/releases/${release_id}/assets?name=${chart}"
   )
+
   echo "${upload_output}"
   exit 0
 }
