@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 readonly PROJECT=$1
-readonly VERSION=$2
+readonly TAG=$2
 readonly GITHUB_TOKEN=$3
 
 readonly HELM_URL=https://storage.googleapis.com/kubernetes-helm
@@ -14,17 +14,17 @@ readonly HELM_TARBALL=helm-v2.11.0-linux-amd64.tar.gz
 main() {
   if ! setup_helm_client; then
     log_error "Helm client could not get installed"
-    return 1
+    exit 1
   fi
 
-  if ! id=(release_github "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}"); then
+  if ! id=$(release_github "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}"); then
     log_error "GitHub Release could not get created"
-    return 1
+    exit 1
   fi
 
   if ! upload_assets "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}" "${id}"; then
     log_error "Assets could not be uploaded to GitHub"
-    return 1
+    exit 1
   fi
 
 }
@@ -45,21 +45,21 @@ release_github() {
   local version="${2?Specify version}"
   local token="${3?Specify Github Token}"
 
-
-  release_exists=$(wget --no-check-certificate "https://github.com/giantswarm/${project}/tarball/v${version}" > /dev/null 2>&1)
-  if [ "${release_exists}" -eq 0 ];then
+  wget --no-check-certificate "https://github.com/giantswarm/${project}/tarball/${version}" > /dev/null 2>&1
+  release_exists=$?
+  if [ "${release_exists}" -eq 0 ]; then
     log_error "Release already exists."
-    exit 1
+    return 1
   fi
 
-  echo "Creating Github release v${version}"
+  echo "Creating Github release ${version}"
   release_output=$(curl -s \
       -X POST \
       -H "Authorization: token ${token}" \
       -H "Content-Type: application/json" \
       -d "{
-          \"tag_name\": \"v${version}\",
-          \"name\": \"v${version}\",
+          \"tag_name\": \"${version}\",
+          \"name\": \"${version}\",
           \"body\": \"### New features\\n\\n### Minor changes\\n\\n### Bugfixes\\n\\n\",
           \"draft\": false,
           \"prerelease\": false
@@ -68,10 +68,11 @@ release_github() {
   )
   echo "The Github release is now published."
   echo "Please add release notes here:"
-  echo "https://github.com/giantswarm/${project}/releases/edit/v${version}"
+  echo "https://github.com/giantswarm/${project}/releases/edit/${version}"
 
+  echo "${release_output}"
   # Return release id for the asset upload
-  release_id=$(echo "$release_output" | jq '.id')
+  release_id=$(echo "${release_output}" | jq '.id')
   echo "${release_id}"
   return 0
 }
