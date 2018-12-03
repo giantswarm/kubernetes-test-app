@@ -5,9 +5,8 @@ set -o nounset
 set -o pipefail
 
 readonly PROJECT=$1
-readonly SHA=$2
-readonly VERSION=$3
-readonly GITHUB_TOKEN=$4
+readonly VERSION=$2
+readonly GITHUB_TOKEN=$3
 
 readonly HELM_URL=https://storage.googleapis.com/kubernetes-helm
 readonly HELM_TARBALL=helm-v2.11.0-linux-amd64.tar.gz
@@ -23,7 +22,7 @@ main() {
     return 1
   fi
 
-  if ! upload_assets "${PROJECT}" "${TAG}" "${GITHUB_TOKEN} ${id}"; then
+  if ! upload_assets "${PROJECT}" "${TAG}" "${GITHUB_TOKEN}" "${id}"; then
     log_error "Assets could not be uploaded to GitHub"
     return 1
   fi
@@ -47,8 +46,8 @@ release_github() {
   local token="${3?Specify Github Token}"
 
 
-  wget --no-check-certificate "https://github.com/giantswarm/${project}/tarball/v${version}" > /dev/null 2>&1
-  if [ $? -eq 0 ];then
+  release_exists=$(wget --no-check-certificate "https://github.com/giantswarm/${project}/tarball/v${version}" > /dev/null 2>&1)
+  if [ "${release_exists}" -eq 0 ];then
     log_error "Release already exists."
     exit 1
   fi
@@ -72,8 +71,8 @@ release_github() {
   echo "https://github.com/giantswarm/${project}/releases/edit/v${version}"
 
   # Return release id for the asset upload
-  release_id=$(echo $release_output | jq '.id')
-  echo ${release_id}
+  release_id=$(echo "$release_output" | jq '.id')
+  echo "${release_id}"
   return 0
 }
 
@@ -83,18 +82,18 @@ upload_assets(){
   local token="${3?Specify Github Token}"
   local release_id="${4?Specify Release Id}"
 
-  # Replace CI version with release VERSION
-  sed -i 's/version:.*/version: '${version}'/' "helm/${project}-chart/Chart.yaml"
+  # Replace CI version with release version
+  sed -i 's/version:.*/version: '"${version}"'/' "helm/${project}-chart/Chart.yaml"
   chart=$(helm package --save=false "helm/${project}-chart" | tr "/" " " | awk '{print $NF}')
 
   echo "Upload chart ${chart} to GitHub Release"
   upload_output=$(curl -s \
         -H "Authorization: token ${token}" \
         -H "Content-Type: application/octet-stream" \
-        --data-binary @${chart} \
+        --data-binary @"${chart}" \
           "https://uploads.github.com/repos/giantswarm/${project}/releases/${release_id}/assets?name=${chart}"
   )
-  echo ${upload_output}
+  echo "${upload_output}"
   exit 0
 }
 
