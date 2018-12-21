@@ -45,7 +45,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${PERSONAL_ACCESS_TOKEN} -u taylorbot -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./architect
+            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./architect
 
 workflows:
   version: 2
