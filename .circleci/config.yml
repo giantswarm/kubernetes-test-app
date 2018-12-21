@@ -27,27 +27,33 @@ jobs:
           at: .
 
       - run:
-          name: Replace SHA with specified Version
-          command: |
-            sed -i 's/version:.*/version: '$(cat ./VERSION)'/' helm/${CIRCLE_PROJECT_REPONAME}-chart/Chart.yaml
-      - run:
           name: Release chart to helm repository
-          command: ./ci-scripts/push-to-registry.sh ${CIRCLE_PROJECT_REPONAME} ${PERSONAL_ACCESS_TOKEN}
+          command: ./ci-scripts/release.sh "${CIRCLE_PROJECT_REPONAME}" "${CIRCLE_TAG}" "${PERSONAL_ACCESS_TOKEN}"
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.12
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u taylorbot -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./artifacts/
 
 workflows:
   version: 2
-  build-e2e-deploy:
+  build-deploy:
     jobs:
       - build:
           filters:
             tags:
-              only: /.*/
-
-      - release-chart:
+              only: /^\d+\.\d+\.\d+$/
+      - publish-github-release:
           requires:
-              - build
+            - build
           filters:
-            tags:
-              only: /^v.*/
             branches:
               ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
