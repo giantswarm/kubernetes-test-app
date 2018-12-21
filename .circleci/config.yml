@@ -18,11 +18,12 @@ jobs:
     - store_test_results:
         path: /tmp/results
 
-
   publish-github-release:
     docker:
       - image: cibuilds/github:0.12
     steps:
+      - checkout
+
       - run: "Package Helm Chart"
         command: |
           ./ci-scripts/package.sh ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG}
