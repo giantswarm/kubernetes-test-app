@@ -9,7 +9,7 @@ readonly TAG=$2
 readonly GITHUB_TOKEN=$3
 
 readonly HELM_URL=https://storage.googleapis.com/kubernetes-helm
-readonly HELM_TARBALL=helm-v2.11.0-linux-amd64.tar.gz
+readonly HELM_TARBALL=helm-v2.12.0-linux-amd64.tar.gz
 
 main() {
   if ! setup_helm_client; then
@@ -32,6 +32,8 @@ main() {
     log_error "Assets could not be uploaded to GitHub."
     exit 1
   fi
+
+  echo "Successfully released ${PROJECT}:${TAG}"
 }
 
 package_chart() {
@@ -40,8 +42,8 @@ package_chart() {
 
   # Replace CI version with release version
   sed -i 's/version:.*/version: '"${version}"'/' "helm/${project}-chart/Chart.yaml"
+
   helm package --save=false "helm/${project}-chart"
-  return 0
 }
 
 setup_helm_client() {
@@ -103,8 +105,6 @@ upload_asset(){
   if [ ! "${upload_status}" == "uploaded" ]; then
     return 1
   fi
-
-  return 0
 }
 
 log_error() {
