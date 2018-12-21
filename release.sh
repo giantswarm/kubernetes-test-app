@@ -98,7 +98,7 @@ upload_asset(){
     -H "Authorization: token ${token}" \
     -H "Content-Type: application/octet-stream" \
     --data-binary "@${file}" \
-    "https://uploads.github.com/repos/giantswarm/${project}/releases/${release_id}/assets?name=${file})"
+    "https://uploads.github.com/repos/giantswarm/${project}/releases/${release_id}/assets?name=$(basename ${file})"
   )
 
   upload_status=$(echo "${upload_output}" | jq -r .state)
