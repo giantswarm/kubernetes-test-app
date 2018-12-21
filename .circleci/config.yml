@@ -18,34 +18,19 @@ jobs:
     - store_test_results:
         path: /tmp/results
 
-    - persist_to_workspace:
-        root: .
-        paths:
-        - ./architect
-
-  release-chart:
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
-    machine: true
-    steps:
-      - checkout
-
-      - attach_workspace:
-          at: .
-
-      - run:
-          name: Release chart to helm repository
-          command: ./ci-scripts/release.sh "${CIRCLE_PROJECT_REPONAME}" "${CIRCLE_TAG}" "${PERSONAL_ACCESS_TOKEN}"
 
   publish-github-release:
     docker:
       - image: cibuilds/github:0.12
     steps:
-      - attach_workspace:
-          at: ./
+      - run: "Package Helm Chart"
+        command: |
+          ./ci-scripts/package.sh ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG}
+
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./architect
+            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} "${CIRCLE_PROJECT_REPONAME}-chart-${CIRCLE_TAG}.tgz"
 
 workflows:
   version: 2
