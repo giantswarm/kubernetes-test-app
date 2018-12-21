@@ -35,7 +35,7 @@ jobs:
       - image: cibuilds/github:0.12
     steps:
       - attach_workspace:
-          at: ./artifacts
+          at: ./
       - run:
           name: "Publish Release on GitHub"
           command: |
