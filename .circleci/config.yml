@@ -1,6 +1,7 @@
 version: 2
 jobs:
   build:
+    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
     steps:
     - checkout
@@ -16,6 +17,11 @@ jobs:
 
     - store_test_results:
         path: /tmp/results
+
+    - persist_to_workspace:
+        root: .
+        paths:
+        - ./architect
 
   release-chart:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
@@ -39,7 +45,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ghr -t ${PERSONAL_ACCESS_TOKEN} -u taylorbot -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./README.md
+            ghr -t ${PERSONAL_ACCESS_TOKEN} -u taylorbot -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./architect
 
 workflows:
   version: 2
