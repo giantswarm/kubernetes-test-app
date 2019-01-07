@@ -47,8 +47,6 @@ workflows:
   build-deploy:
     jobs:
       - build:
-          requires:
-            - lint-scripts
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
