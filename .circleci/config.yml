@@ -1,5 +1,13 @@
 version: 2
 jobs:
+  lint-scripts:
+    docker:
+      - image: koalaman/shellcheck-alpine
+    steps:
+      - checkout
+      - run:
+          name: lint scripts
+          command: shellcheck -x ci-scripts/package.sh
   build:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
@@ -38,10 +46,10 @@ workflows:
   version: 2
   build-deploy:
     jobs:
+      - lint-scripts
       - build:
-          filters:
-            tags:
-              only: /^\d+\.\d+\.\d+$/
+          requires:
+            - lint-scripts
       - publish-github-release:
           requires:
             - build
