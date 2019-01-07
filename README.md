@@ -17,3 +17,4 @@ https://github.com/giantswarm/kubernetes-test-app/releases/edit/[version]
 
 
 Patch for 0.4.0
+
