@@ -14,3 +14,4 @@ Create a release by pushing a tag to GitHub. The version must by SemVer format
 Add Release notes by editing the published release here:
 
 https://github.com/giantswarm/kubernetes-test-app/releases/edit/[version]
+
