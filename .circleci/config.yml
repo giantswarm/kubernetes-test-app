@@ -49,7 +49,7 @@ workflows:
       - lint-scripts
       - build:
           requires:
-            - lint
+            - lint-scripts
       - publish-github-release:
           requires:
             - build
