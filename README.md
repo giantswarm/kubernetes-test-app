@@ -17,3 +17,5 @@ https://github.com/giantswarm/kubernetes-test-app/releases/edit/[version]
 
 
 Version 0.6.0
+
+Path 0.5.5
