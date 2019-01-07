@@ -46,7 +46,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - lint
+      - lint-scripts
       - build:
           requires:
             - lint
