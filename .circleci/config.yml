@@ -1,10 +1,5 @@
 version: 2
 jobs:
-    steps:
-      - checkout
-      - run:
-          name: lint scripts
-          command: shellcheck -x ci-scripts/package.sh
   build:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
