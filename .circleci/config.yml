@@ -1,15 +1,5 @@
 version: 2
 jobs:
-  lint:
-    docker:
-      - image: koalaman/shellcheck-alpine
-    steps:
-      - checkout
-
-      - run:
-          name: lint scripts
-          command: shellcheck -x ci-scripts/*
-
   build:
     working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
     machine: true
@@ -48,13 +38,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - lint:
-          filters:
-            tags:
-              only: /^\d+\.\d+\.\d+$/
       - build:
-          requires:
-            - lint
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
