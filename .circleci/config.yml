@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: koalaman/shellcheck-alpine
+      - image: quay.io/giantswarm/shellcheck-alpine:v0.6.0
     steps:
       - checkout
 
@@ -30,7 +30,7 @@ jobs:
 
   publish-github-release:
     docker:
-      - image: cibuilds/github:0.12
+      - image: quay.io/giantswarm/github:0.12
     steps:
       - checkout
 
@@ -52,7 +52,7 @@ workflows:
       - build:
           filters:
             tags:
-              only: /^\d+\.\d+\.\d+$/
+              only: /^v\d+\.\d+\.\d+$/
       - publish-github-release:
           requires:
             - build
@@ -60,4 +60,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^\d+\.\d+\.\d+$/
+              only: /^v\d+\.\d+\.\d+$/
