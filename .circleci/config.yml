@@ -42,9 +42,7 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            # We strip the git tag from prefixed 'v' for the chart version
-            VERSION=${CIRCLE_TAG:1}
-            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${VERSION} "${CIRCLE_PROJECT_REPONAME}-chart-${VERSION}.tgz"
+            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} "${CIRCLE_PROJECT_REPONAME}-chart-${CIRCLE_TAG:1}.tgz"
 
 workflows:
   version: 2
