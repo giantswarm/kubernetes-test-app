@@ -12,7 +12,7 @@ replicas: 1
 image:
   registry: quay.io
   repository: giantswarm/kube-state-metrics
-  tag: v1.3.1
+  tag: v1.8.0
 
 resources:
   limits:
@@ -26,4 +26,4 @@ test:
   image:
     registry: quay.io
     repository: giantswarm/alpine-testing
-    tag: 0.1.0
+    tag: 0.1.1
