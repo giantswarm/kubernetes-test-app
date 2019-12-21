@@ -16,6 +16,6 @@ Add Release notes by editing the published release here:
 https://github.com/giantswarm/kubernetes-test-app/releases/edit/[version]
 
 
-Version 0.6.0
+Version 0.7.1
 
 Path 0.5.5
