@@ -1,63 +1,16 @@
-version: 2
-jobs:
-  lint:
-    docker:
-      - image: quay.io/giantswarm/shellcheck-alpine:v0.6.0
-    steps:
-      - checkout
-
-      - run:
-          name: lint scripts
-          command: shellcheck -x ci-scripts/*
-
-  build:
-    working_directory: /home/circleci/.go_workspace/src/github.com/giantswarm/kubernetes-test-app
-    machine: true
-    steps:
-    - checkout
-
-    - run: |
-        wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
-        chmod +x ./architect
-        ./architect version
-
-    - run:
-        name: Template and push to quay
-        command: ./architect build
-
-    - store_test_results:
-        path: /tmp/results
-
-  publish-github-release:
-    docker:
-      - image: quay.io/giantswarm/github:0.12
-    steps:
-      - checkout
-
-      - run:
-          name: "Package Helm Chart"
-          command: |
-            ./ci-scripts/package.sh ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG}
-
-      - run:
-          name: "Publish Release on GitHub"
-          command: |
-            ghr -t ${PERSONAL_ACCESS_TOKEN} -u giantswarm -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} "${CIRCLE_PROJECT_REPONAME}-chart-${CIRCLE_TAG:1}.tgz"
+version: 2.1
+orbs:
+  architect: giantswarm/architect@0.8.3
 
 workflows:
-  version: 2
-  build-deploy:
+  build:
     jobs:
-      - lint
-      - build:
+      - architect/push-to-app-catalog:
+          name: push-chart-operator-to-app-catalog
+          app_catalog: "sample-catalog"
+          app_catalog_test: "sample-catalog"
+          chart: "kubernetes-test-app-chart"
           filters:
+            # Needed to trigger job also on git tag.
             tags:
-              only: /^v\d+\.\d+\.\d+$/
-      - publish-github-release:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
+              only: /^v.*/

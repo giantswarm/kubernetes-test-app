@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm subchart that waits to simulate a blocking chart
+name: wait-chart
+version: 0.1.0
