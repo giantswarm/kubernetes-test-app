@@ -5,4 +5,4 @@ home: https://github.com/giantswarm/kubernetes-test-app
 name: kubernetes-test-app-chart
 # Depicts the version used for CI. Will get replaced by the version,
 # which is specified in the VERSION file in the project root.
-version: 0.1.0-[[ .SHA ]]
+version: [[ .Version ]]
