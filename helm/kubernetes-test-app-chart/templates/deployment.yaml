@@ -26,8 +26,8 @@ spec:
           httpGet:
             path: /healthz
             port: {{ .Values.port }}
-          initialDelaySeconds: 4
-          timeoutSeconds: 4
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /healthz
