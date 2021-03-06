@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@2.1.0
+  architect: giantswarm/architect@2.2.0
 
 workflows:
   build:
@@ -10,6 +10,7 @@ workflows:
           app_catalog: "sample-catalog"
           app_catalog_test: "sample-catalog"
           chart: "kubernetes-test-app-chart"
+          explicit_allow_chart_name_mismatch: true
           filters:
             # Needed to trigger job also on git tag.
             tags:
