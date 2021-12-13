@@ -8,7 +8,7 @@ readonly PROJECT=$1
 readonly TAG=$2
 readonly VERSION=${TAG:1}
 
-readonly HELM_URL=https://storage.googleapis.com/kubernetes-helm
+readonly HELM_URL=https://get.helm.sh
 readonly HELM_TARBALL=helm-v2.16.1-linux-amd64.tar.gz
 
 main() {
